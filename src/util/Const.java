@@ -33,13 +33,14 @@ public class Const {
 	public static final int AGENT_START_ROW = 3;
 	
 	// Discount factor
-	public static final double DISCOUNT =  0.946350000;	// FIXME: Should be 0.99 based on question
+	public static final double DISCOUNT =  0.990;	// FIXME: Should be 0.99 based on question
+	// FIXME : 0.946350000
 	
 	// Rmax
 	public static final double R_MAX = 1.000;
 	
 	// Constant c
-	public static final double C = 0.1;	// FIXME: What to use for constant c
+	public static final double C = 0.100;	// FIXME: What to use for constant c
 	
 	// Epsilon e = c * Rmax
 	public static final double EPSILON = C * R_MAX;
