@@ -7,6 +7,7 @@ import java.util.List;
 import classes.ActionUtilPair;
 import classes.GridWorld;
 import classes.State;
+
 import util.ActionUtilHelper;
 import util.Const;
 
@@ -37,15 +38,7 @@ public class ValueIterationApp {
 				lstActionUtilPairs.get(lstActionUtilPairs.size() - 1);
 		
 		// Display the utilities of all the (non-wall) states
-		for (int col = 0; col < Const.NUM_COLS; col++) {
-			for (int row = 0; row < Const.NUM_ROWS; row++) {
-
-				if (!_grid[col][row].isWall()) {
-					System.out.printf("(%1d, %1d): %-2.6f%n", col, row,
-							optimalPolicy[col][row].getUtil());
-				}
-			}
-		}
+		ActionUtilHelper.displayUtilities(_grid, optimalPolicy);
 		
 		// Display the optimal policy
 		System.out.println("\nOptimal Policy:");
@@ -53,7 +46,7 @@ public class ValueIterationApp {
 		
 		// Display the utilities of all states
 		System.out.println("\nUtilities of all states:");
-		ActionUtilHelper.displayUtilities(optimalPolicy);
+		ActionUtilHelper.displayUtilitiesGrid(optimalPolicy);
 	}
 	
 	public static List<ActionUtilPair[][]> valueIteration(final State[][] _grid) {
