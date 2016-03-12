@@ -31,6 +31,14 @@ public class ActionUtilHelper {
 	    }
 		
 		System.out.println(sb.toString());
+		
+		if(sb.toString().equals("|---|---|---|---|---|---|\n| ^ | W | < | < | < | ^ |\n|---|---|---|---|---|---|\n| ^ | < | < | < | W | ^ |\n|---|---|---|---|---|---|\n| ^ | < | < | ^ | < | < |\n|---|---|---|---|---|---|\n| ^ | < | < | ^ | ^ | ^ |\n|---|---|---|---|---|---|\n| ^ | W | W | W | ^ | ^ |\n|---|---|---|---|---|---|\n| ^ | < | < | < | ^ | ^ |\n|---|---|---|---|---|---|\n"))
+		{
+			System.out.println("SAME/OPTIMAL");
+		}
+		else {
+			System.out.println("NOT SAME/OPTIMAL");
+		}
 	}
 	
 	/*

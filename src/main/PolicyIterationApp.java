@@ -1,5 +1,6 @@
 package main;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class PolicyIterationApp {
 				
 				currUtilArr[col][row] = new ActionUtilPair();
 				if (!grid[col][row].isWall()) {
-					currUtilArr[col][row].setAction(Action.getRandomAction());
+					currUtilArr[col][row].setAction(Action.UP);
 				}
 			}
 		}
@@ -86,12 +87,38 @@ public class PolicyIterationApp {
 					if (grid[col][row].isWall())
 						continue;
 
+					// Best calculated action based on maximizing utility
 					ActionUtilPair bestActionUtil =
-							FuncHelper.calcNewUtility(col, row, currUtilArr, grid);
+							FuncHelper.calcNewUtility(col, row, policyActionUtil, grid);
 					
-					if(bestActionUtil.getUtil() > policyActionUtil[col][row].getUtil()) {
+					// Action and the corresponding utlity based on current policy
+					Action policyAction = policyActionUtil[col][row].getAction();
+					ActionUtilPair pActionUtil = null;
+					switch (policyAction) {
+					case UP:
+						pActionUtil = new ActionUtilPair(Action.UP,
+								FuncHelper.calcActionUpUtility(col, row, policyActionUtil, grid));
+						break;
+					case DOWN:
+						pActionUtil = new ActionUtilPair(Action.DOWN,
+								FuncHelper.calcActionDownUtility(col, row, policyActionUtil, grid));
+						break;
+					case LEFT:
+						pActionUtil = new ActionUtilPair(Action.LEFT,
+								FuncHelper.calcActionLeftUtility(col, row, policyActionUtil, grid));
+						break;
+					case RIGHT:
+						pActionUtil = new ActionUtilPair(Action.RIGHT,
+								FuncHelper.calcActionRightUtility(col, row, policyActionUtil, grid));
+						break;
+					}
+					
+					/*
+					 * bestActionUtil.getAction() != policyActionUtil[col][row].getAction()
+					 */
+					if((bestActionUtil.getUtil() > pActionUtil.getUtil())) {
 						
-						policyActionUtil[col][row].setUtil(bestActionUtil.getUtil());
+						//policyActionUtil[col][row].setUtil(bestActionUtil.getUtil());
 						policyActionUtil[col][row].setAction(bestActionUtil.getAction());
 						bUnchanged = false;
 					}
@@ -115,8 +142,17 @@ public class PolicyIterationApp {
 	 * @param grid			The Grid World
 	 * @return				The next utility estimates of all the states
 	 */
-	public static ActionUtilPair[][] produceUtilEst(ActionUtilPair[][] currUtilArr,
+	public static ActionUtilPair[][] produceUtilEst(final ActionUtilPair[][] currUtilArr,
 			final State[][] grid) {
+		
+		ActionUtilPair[][] currUtilArrCpy = new ActionUtilPair[Const.NUM_COLS][Const.NUM_ROWS];
+		for (int col = 0; col < Const.NUM_COLS; col++) {
+			for (int row = 0; row < Const.NUM_ROWS; row++) {
+				currUtilArrCpy[col][row] = new ActionUtilPair(
+						currUtilArr[col][row].getAction(),
+						currUtilArr[col][row].getUtil());
+			}
+		}
 		
 		ActionUtilPair[][] newUtilArr = new ActionUtilPair[Const.NUM_COLS][Const.NUM_ROWS];
 		for (int col = 0; col < Const.NUM_COLS; col++) {
@@ -124,7 +160,6 @@ public class PolicyIterationApp {
 				newUtilArr[col][row] = new ActionUtilPair();
 			}
 		}
-		FuncHelper.array2DCopy(currUtilArr, newUtilArr);
 		
 		int k = 0;
 		do {
@@ -137,29 +172,29 @@ public class PolicyIterationApp {
 					if (grid[col][row].isWall())
 						continue;
 	
-					Action action = currUtilArr[col][row].getAction();
+					Action action = currUtilArrCpy[col][row].getAction();
 					switch (action) {
 					case UP:
-						newUtilArr[col][row].setUtil(FuncHelper
-								.calcActionUpUtility(col, row, currUtilArr, grid));
+						newUtilArr[col][row] = new ActionUtilPair(Action.UP,
+								FuncHelper.calcActionUpUtility(col, row, currUtilArrCpy, grid));
 						break;
 					case DOWN:
-						newUtilArr[col][row].setUtil(FuncHelper
-								.calcActionDownUtility(col, row, currUtilArr, grid));
+						newUtilArr[col][row] = new ActionUtilPair(Action.DOWN,
+								FuncHelper.calcActionDownUtility(col, row, currUtilArrCpy, grid));
 						break;
 					case LEFT:
-						newUtilArr[col][row].setUtil(FuncHelper
-								.calcActionLeftUtility(col, row, currUtilArr, grid));
+						newUtilArr[col][row] = new ActionUtilPair(Action.LEFT,
+								FuncHelper.calcActionLeftUtility(col, row, currUtilArrCpy, grid));
 						break;
 					case RIGHT:
-						newUtilArr[col][row].setUtil(FuncHelper
-								.calcActionRightUtility(col, row, currUtilArr, grid));
+						newUtilArr[col][row] = new ActionUtilPair(Action.RIGHT,
+								FuncHelper.calcActionRightUtility(col, row, currUtilArrCpy, grid));
 						break;
 					}
 				}
 			}
 			
-			FuncHelper.array2DCopy(newUtilArr, currUtilArr);
+			FuncHelper.array2DCopy(newUtilArr, currUtilArrCpy);
 			
 		} while(++k <= Const.K);
 		
