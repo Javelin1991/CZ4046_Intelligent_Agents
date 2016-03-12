@@ -6,6 +6,7 @@ import java.util.List;
 
 import classes.ActionUtilPair;
 import classes.State;
+import classes.ActionUtilPair.Action;
 
 public class FuncHelper {
 	
@@ -32,7 +33,7 @@ public class FuncHelper {
 	 * @return				An ActionUtilPair that contains the best action,
 	 * 						and its corresponding utility
 	 */
-	public static ActionUtilPair calcNewUtility(final int col, final int row,
+	public static ActionUtilPair calcBestUtility(final int col, final int row,
 			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
 		
 		List<ActionUtilPair> lstActionUtilPairs = new ArrayList<>();
@@ -50,6 +51,44 @@ public class FuncHelper {
 		ActionUtilPair chosenActionUtilPair = lstActionUtilPairs.get(0);
 		
 		return chosenActionUtilPair;
+	}
+	
+	/**
+	 * Calculates the utility for the given action
+	 * 
+	 * @param action		The fixed action
+	 * @param col			Column in the grid
+	 * @param row			Row in the grid
+	 * @param actionUtilArr	Array of the current utility values
+	 * @param grid			The Grid World
+	 * @return				An ActionUtilPair that contains the fixed action,
+	 * 						and its corresponding utility
+	 */
+	public static ActionUtilPair calcFixedUtility(final Action action, final int col,
+			final int row, final ActionUtilPair[][] actionUtilArr, final State[][] grid) {
+		
+		ActionUtilPair fixedActionUtil = null;
+		
+		switch (action) {
+		case UP:
+			fixedActionUtil = new ActionUtilPair(Action.UP,
+					FuncHelper.calcActionUpUtility(col, row, actionUtilArr, grid));
+			break;
+		case DOWN:
+			fixedActionUtil = new ActionUtilPair(Action.DOWN,
+					FuncHelper.calcActionDownUtility(col, row, actionUtilArr, grid));
+			break;
+		case LEFT:
+			fixedActionUtil = new ActionUtilPair(Action.LEFT,
+					FuncHelper.calcActionLeftUtility(col, row, actionUtilArr, grid));
+			break;
+		case RIGHT:
+			fixedActionUtil = new ActionUtilPair(Action.RIGHT,
+					FuncHelper.calcActionRightUtility(col, row, actionUtilArr, grid));
+			break;
+		}
+		
+		return fixedActionUtil;
 	}
 	
 	/**

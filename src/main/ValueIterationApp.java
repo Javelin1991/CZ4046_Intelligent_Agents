@@ -87,7 +87,7 @@ public class ValueIterationApp {
 		        		continue;
 		        	
 		        	newUtilArr[col][row] =
-		        			FuncHelper.calcNewUtility(col, row, currUtilArr, grid);
+		        			FuncHelper.calcBestUtility(col, row, currUtilArr, grid);
 		        	
 		        	// Update maximum change (delta) if necessary
 		        	double newUtil = newUtilArr[col][row].getUtil();
