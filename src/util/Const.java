@@ -44,4 +44,8 @@ public class Const {
 	
 	// Epsilon e = c * Rmax
 	public static final double EPSILON = C * R_MAX;
+	
+	// Constant k (i.e. number of times simplified Bellman update is executed
+	// to produce the next utility estimate)
+	public static final int K = 10;
 }

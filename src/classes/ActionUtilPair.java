@@ -1,5 +1,7 @@
 package classes;
 
+import java.util.Random;
+
 /**
  * Stores an action and utility pair for a given state
  */
@@ -63,6 +65,14 @@ public class ActionUtilPair implements Comparable<ActionUtilPair> {
 		@Override
 		public String toString() {
 			return _strRep;
+		}
+		
+		private static final Action[] ACTIONS = values();
+		private static final int SIZE = ACTIONS.length;
+		private static final Random RANDOM = new Random();
+
+		public static Action getRandomAction() {
+			return ACTIONS[RANDOM.nextInt(SIZE)];
 		}
 	}
 }

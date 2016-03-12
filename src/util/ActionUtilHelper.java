@@ -77,7 +77,7 @@ public class ActionUtilHelper {
 			for (int col = 0; col < Const.NUM_COLS; col++) {
 				
 				sb.append(String.format(" %s |",
-						decimalFormat.format(utilArr[col][row].getUtil())));
+						decimalFormat.format(utilArr[col][row].getUtil()).substring(0, 6)));
 			}
 			
 			sb.append("\n|");
