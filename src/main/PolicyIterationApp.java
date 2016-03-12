@@ -10,6 +10,7 @@ import classes.State;
 
 import util.ActionUtilHelper;
 import util.Const;
+import util.FileIOHelper;
 import util.FuncHelper;
 
 public class PolicyIterationApp {
@@ -30,10 +31,13 @@ public class PolicyIterationApp {
 		System.out.println("k: " + Const.K + " (i.e. # of times simplified Bellman"
 				+ " update is repeated to produce the next utility estimate)");
 		
-		// Perform value iteration
+		// Perform policy iteration
 		List<ActionUtilPair[][]> lstActionUtilPairs = policyIteration(_grid);
 		
-		// Final item in the list is the optimal policy derived by value iteration
+		// Output to csv file to plot utility estimates as a function of iteration
+		FileIOHelper.writeToFile(lstActionUtilPairs, "policy_iteration_utilities");
+		
+		// Final item in the list is the optimal policy derived by policy iteration
 		final ActionUtilPair[][] optimalPolicy =
 				lstActionUtilPairs.get(lstActionUtilPairs.size() - 1);
 		

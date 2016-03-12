@@ -8,6 +8,7 @@ import classes.GridWorld;
 import classes.State;
 import util.ActionUtilHelper;
 import util.Const;
+import util.FileIOHelper;
 import util.FuncHelper;
 
 public class ValueIterationApp {
@@ -31,6 +32,9 @@ public class ValueIterationApp {
 		
 		// Perform value iteration
 		List<ActionUtilPair[][]> lstActionUtilPairs = valueIteration(_grid);
+		
+		// Output to csv file to plot utility estimates as a function of iteration
+		FileIOHelper.writeToFile(lstActionUtilPairs, "value_iteration_utilities");
 		
 		// Final item in the list is the optimal policy derived by value iteration
 		final ActionUtilPair[][] optimalPolicy =
