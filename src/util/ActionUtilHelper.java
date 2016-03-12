@@ -7,6 +7,7 @@ import classes.State;
 
 public class ActionUtilHelper {
 	
+	/** Display the policy, i.e. the action to be taken at each state **/
 	public static void displayPolicy(final ActionUtilPair[][] utilArr) {
 		
 		StringBuilder sb = new StringBuilder();

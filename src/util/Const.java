@@ -33,8 +33,7 @@ public class Const {
 	public static final int AGENT_START_ROW = 3;
 	
 	// Discount factor
-	public static final double DISCOUNT =  0.990;	// FIXME: Should be 0.99 based on question
-	// FIXME : 0.946350000
+	public static final double DISCOUNT =  0.990;
 	
 	// Rmax
 	public static final double R_MAX = 1.000;

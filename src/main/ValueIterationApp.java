@@ -99,8 +99,7 @@ public class ValueIterationApp {
 		        }
 			}
 			
-			// Print newUtilityArr?
-			numIterations++;
+			++numIterations;
 			
 		} while (delta >= convergenceCriteria);
 		
