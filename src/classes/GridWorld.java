@@ -10,6 +10,8 @@ public class GridWorld {
 		
 		_grid = new State[Const.NUM_COLS][Const.NUM_ROWS];
 		buildGrid();
+		
+		duplicateGrid();
 	}
 	
 	/** Returns the actual grid, i.e. a 2-D states array **/
@@ -66,6 +68,25 @@ public class GridWorld {
 			_grid[gridCol][gridRow].setReward(Const.WALL_REWARD);
 			_grid[gridCol][gridRow].setAsWall(true);
 		}
+	}
+	
+	/**
+	 * Used to 'expand' the maze
+	 */
+	public void duplicateGrid() {
+		
+		for(int row = 0 ; row < Const.NUM_ROWS ; row++) {
+	        for(int col = 0 ; col < Const.NUM_COLS ; col++) {
+	        	
+				if (row >= 6 || col >= 6) {
+					int trueRow = row % 6;
+					int trueCol = col % 6;
+
+					_grid[col][row].setReward(_grid[trueCol][trueRow].getReward());
+					_grid[col][row].setAsWall(_grid[trueCol][trueRow].isWall());
+				}
+	        }
+	    }
 	}
 	
 	/**
