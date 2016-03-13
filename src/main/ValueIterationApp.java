@@ -64,17 +64,21 @@ public class ValueIterationApp {
 		
 		List<ActionUtilPair[][]> lstActionUtilPairs = new ArrayList<>();
 		
-		double delta = 0.000;
+		// For using span semi-norm instead of max norm
+		double deltaMax = Double.MIN_VALUE;
+		double deltaMin = Double.MAX_VALUE;
+		
 		double convergenceCriteria =
 				Const.EPSILON * ((1.000 - Const.DISCOUNT) / Const.DISCOUNT);
 		System.out.printf("Convergence criteria: %.5f "
-				+ "(i.e. delta must be < this value)%n", convergenceCriteria);
+				+ "(i.e. the span semi-norm must be < this value)%n", convergenceCriteria);
 		int numIterations = 0;
 		
 		do {
 			
 			FuncHelper.array2DCopy(newUtilArr, currUtilArr);
-			delta = 0.000;
+			deltaMax = Double.MIN_VALUE;
+			deltaMin = Double.MAX_VALUE;
 			
 			// Append to list of ActionUtilPair a copy of the existing actions & utilities
 			ActionUtilPair[][] currUtilArrCopy =
@@ -93,19 +97,20 @@ public class ValueIterationApp {
 		        	newUtilArr[col][row] =
 		        			FuncHelper.calcBestUtility(col, row, currUtilArr, grid);
 		        	
-		        	// Update maximum change (delta) if necessary
 		        	double newUtil = newUtilArr[col][row].getUtil();
 		        	double currUtil = currUtilArr[col][row].getUtil();
 		        	double sDelta = Math.abs(newUtil - currUtil);
-		        	if(sDelta > delta) {
-		        		delta = sDelta;
-		        	}
+		        	
+		        	// Update maximum delta & minimum delta, if necessary
+		        	deltaMax = Math.max(deltaMax, sDelta);
+		        	deltaMin = Math.min(deltaMin, sDelta);
 		        }
 			}
 			
 			++numIterations;
 			
-		} while (delta >= convergenceCriteria);
+			// Terminating condition: Span semi-norm less than the convergence criteria
+		} while ((deltaMax - deltaMin) >= convergenceCriteria);
 		
 		System.out.printf("%nNumber of iterations: %d%n", numIterations);
 		return lstActionUtilPairs;
