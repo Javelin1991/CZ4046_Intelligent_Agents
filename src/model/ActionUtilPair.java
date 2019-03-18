@@ -27,7 +27,7 @@ public class ActionUtilPair implements Comparable<ActionUtilPair> {
 	public String getActionStr() {
 
 		// No action at wall, otherwise return one of the 4 possible actions
-		return _action != null ? _action.toString() : "W";
+		return _action != null ? _action.toString() : " Wall";
 	}
 
 	public void setAction(Action action) {

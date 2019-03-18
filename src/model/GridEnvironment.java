@@ -1,6 +1,7 @@
 package model;
 
 import manager.Const;
+import manager.DisplayManager;
 
 public class GridEnvironment {
 
@@ -19,17 +20,17 @@ public class GridEnvironment {
 	}
 
 	/**
-	 * Initialize the Grid World
-	 */
+	* Initialize the Grid Environment
+	*/
 	public void buildGrid() {
 
 		// All grids (even walls) starts with reward of -0.040
 		for(int row = 0 ; row < Const.NUM_ROWS ; row++) {
-	        for(int col = 0 ; col < Const.NUM_COLS ; col++) {
+			for(int col = 0 ; col < Const.NUM_COLS ; col++) {
 
-	        	_grid[col][row] = new State(Const.WHITE_REWARD);
-	        }
-	    }
+				_grid[col][row] = new State(Const.WHITE_REWARD);
+			}
+		}
 
 		// Set all the green squares (+1.000)
 		String[] greenSquaresArr = Const.GREEN_SQUARES.split(Const.GRID_DELIM);
@@ -70,12 +71,12 @@ public class GridEnvironment {
 	}
 
 	/**
-	 * Used to 'expand' the maze
-	 */
+	* Used to 'expand' the maze
+	*/
 	public void duplicateGrid() {
 
 		for(int row = 0 ; row < Const.NUM_ROWS ; row++) {
-	        for(int col = 0 ; col < Const.NUM_COLS ; col++) {
+			for(int col = 0 ; col < Const.NUM_COLS ; col++) {
 
 				if (row >= 6 || col >= 6) {
 					int trueRow = row % 6;
@@ -84,60 +85,66 @@ public class GridEnvironment {
 					_grid[col][row].setReward(_grid[trueCol][trueRow].getReward());
 					_grid[col][row].setAsWall(_grid[trueCol][trueRow].isWall());
 				}
-	        }
-	    }
+			}
+		}
 	}
 
 	/**
-	 * Display the Grid World
-	 */
+	* Display the Grid Environment
+	*/
 	public void displayGrid() {
 
-		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < 20; i++) {
-			sb.append("*");
+		StringBuilder sb = DisplayManager.frameTitle("Grid Environment");
+		sb.append("|");
+		for(int col = 0 ; col < Const.NUM_COLS ; col++) {
+			sb.append("--------|");
 		}
 		sb.append("\n");
-		sb.append("* Grid Environment *");
-		sb.append("\n");
-		for(int i = 0; i < 20; i++) {
-			sb.append("*");
+
+		for (int row = 0; row < Const.NUM_ROWS; row++) {
+
+			sb.append("|");
+			for(int col = 0 ; col < Const.NUM_COLS ; col++) {
+				sb.append("--------|".replace('-', ' '));
+			}
+			sb.append("\n");
+
+			sb.append("|");
+			for(int col = 0 ; col < Const.NUM_COLS ; col++) {
+
+				State state = _grid[col][row];
+				String temp;
+				if (col == Const.AGENT_START_COL && row == Const.AGENT_START_ROW) {
+					temp = " Start";
+				} else if(state.isWall()) {
+					temp = "Wall";
+				}
+				else if(state.getReward() != Const.WHITE_REWARD) {
+					temp = Double.toString(state.getReward());
+					if (temp.charAt(0) != '-') {
+						temp = " " + temp;
+					}
+				}
+				else {
+					temp = String.format("%4s", "");
+				}
+				int n = (8 - temp.length())/2;
+				String str = String.format("%1$"+n+"s", "");
+				sb.append(str + temp + str + "|");
+			}
+
+			sb.append("\n|");
+			for(int col = 0 ; col < Const.NUM_COLS ; col++) {
+				sb.append("--------|".replace('-', ' '));
+			}
+			sb.append("\n");
+
+			sb.append("|");
+			for(int col = 0 ; col < Const.NUM_COLS ; col++) {
+				sb.append("--------|");
+			}
+			sb.append("\n");
 		}
-
-		sb.append("\n");
-        sb.append("\n");
-
-        sb.append("|");
-        for(int col = 0 ; col < Const.NUM_COLS ; col++) {
-        	sb.append("------|");
-        }
-        sb.append("\n");
-
-		for(int row = 0 ; row < Const.NUM_ROWS ; row++) {
-	        sb.append("|");
-	        for(int col = 0 ; col < Const.NUM_COLS ; col++) {
-
-	        	State state = _grid[col][row];
-
-	        	if (col == 2 && row == 3) {
-	                sb.append(String.format(" %-2s|", "Start"));
-	        	} else if(state.isWall()) {
-	                sb.append(String.format(" %-2s |", "Wall"));
-	        	}
-	        	else if(state.getReward() != Const.WHITE_REWARD) {
-	        		sb.append(String.format("  %+1.0f  |", state.getReward()));
-	        	}
-	        	else {
-	        		sb.append(String.format("%4s  |", ""));
-	        	}
-	        }
-
-	        sb.append("\n|");
-	        for(int col = 0 ; col < Const.NUM_COLS ; col++) {
-	        	sb.append("------|");
-	        }
-	        sb.append("\n");
-	    }
 
 		System.out.println(sb.toString());
 	}

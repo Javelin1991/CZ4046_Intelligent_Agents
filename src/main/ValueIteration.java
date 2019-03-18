@@ -11,7 +11,7 @@ import model.ActionUtilPair;
 import model.GridEnvironment;
 import model.State;
 
-public class ValueIterationApp {
+public class ValueIteration {
 
 	public static GridEnvironment _GridEnvironment = null;
 
@@ -19,16 +19,13 @@ public class ValueIterationApp {
 
 		_GridEnvironment = new GridEnvironment();
 
-		// Displays the Grid World, just for debugging purposes to ensure correctness
+		// Displays the Grid Environment
 		_GridEnvironment.displayGrid();
 
 		State[][] _grid = _GridEnvironment.getGrid();
 
-		// Displays the settings currently used
-		System.out.println("Discount: " + Const.DISCOUNT);
-		System.out.println("Rmax: " + Const.R_MAX);
-		System.out.println("Constant 'c': " + Const.C);
-		System.out.println("Epsilon (c * Rmax): " + Const.EPSILON);
+		// Displays the experiment setup
+		DisplayManager.displayExperimentSetup();
 
 		// Perform value iteration
 		List<ActionUtilPair[][]> lstActionUtilPairs = valueIteration(_grid);
@@ -44,11 +41,9 @@ public class ValueIterationApp {
 		DisplayManager.displayUtilities(_grid, optimalPolicy);
 
 		// Display the optimal policy
-		System.out.println("\nOptimal Policy:");
 		DisplayManager.displayPolicy(optimalPolicy);
 
 		// Display the utilities of all states
-		System.out.println("\nUtilities of all states:");
 		DisplayManager.displayUtilitiesGrid(optimalPolicy);
 	}
 
@@ -65,20 +60,17 @@ public class ValueIterationApp {
 		List<ActionUtilPair[][]> lstActionUtilPairs = new ArrayList<>();
 
 		// For using span semi-norm instead of max norm
-		double deltaMax = Double.MIN_VALUE;
-		double deltaMin = Double.MAX_VALUE;
+		double delta = Double.MIN_VALUE;
 
 		double convergenceCriteria =
 				Const.EPSILON * ((1.000 - Const.DISCOUNT) / Const.DISCOUNT);
 		System.out.printf("Convergence criteria: %.5f "
-				+ "(i.e. the span semi-norm must be < this value)%n", convergenceCriteria);
+				+ "(i.e. the span semi-norm must be < this value)%n%n", convergenceCriteria);
 		int numIterations = 0;
 
 		do {
 
 			UtilityManager.array2DCopy(newUtilArr, currUtilArr);
-			deltaMax = Double.MIN_VALUE;
-			deltaMin = Double.MAX_VALUE;
 
 			// Append to list of ActionUtilPair a copy of the existing actions & utilities
 			ActionUtilPair[][] currUtilArrCopy =
@@ -99,17 +91,16 @@ public class ValueIterationApp {
 
 		        	double newUtil = newUtilArr[col][row].getUtil();
 		        	double currUtil = currUtilArr[col][row].getUtil();
-		        	double sDelta = Math.abs(newUtil - currUtil);
+		        	double newDelta = Math.abs(newUtil - currUtil);
 
 		        	// Update maximum delta & minimum delta, if necessary
-		        	deltaMax = Math.max(deltaMax, sDelta);
+		        	delta = Math.max(delta, newDelta);
 		        }
 			}
 			++numIterations;
 			// Terminating condition: Span semi-norm less than the convergence criteria
-		} while ((deltaMax) >= convergenceCriteria);
-
-		System.out.printf("%nNumber of iterations: %d%n", numIterations);
+		} while ((delta) >= convergenceCriteria);
+		DisplayManager.displayIterationsCount(numIterations);
 		return lstActionUtilPairs;
 	}
 }

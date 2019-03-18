@@ -29,7 +29,7 @@ public class Const {
 	// Agent's starting position
 	// NOTE: A remarkable consequence of using discounted utilities with infinite
 	// horizons is that the optimal policy is independent of the starting state
-	public static final int AGENT_START_COL = 3;
+	public static final int AGENT_START_COL = 2;
 	public static final int AGENT_START_ROW = 3;
 
 	// Discount factor

@@ -13,7 +13,7 @@ import manager.Const;
 import manager.FileManager;
 import manager.DisplayManager;
 
-public class PolicyIterationApp {
+public class PolicyIteration {
 
 	public static GridEnvironment _GridEnvironment = null;
 
@@ -44,11 +44,9 @@ public class PolicyIterationApp {
 		DisplayManager.displayUtilities(_grid, optimalPolicy);
 
 		// Display the optimal policy
-		System.out.println("\nOptimal Policy:");
 		DisplayManager.displayPolicy(optimalPolicy);
 
 		// Display the utilities of all states
-		System.out.println("\nUtilities of all states:");
 		DisplayManager.displayUtilitiesGrid(optimalPolicy);
 	}
 
