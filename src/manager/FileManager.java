@@ -35,7 +35,7 @@ public class FileManager
 			}
 		}
 
-		writeToFile(sb.toString().trim(), "data\\" + fileName + ".csv");
+		writeToFile(sb.toString().trim(), fileName + ".csv");
 	}
 
 	public static void writeToFile(String content, String fileName)
@@ -46,8 +46,6 @@ public class FileManager
 
 			fw.write(content);
 			fw.close();
-
-			//System.out.println("\nSuccessfully saved results to \"" + fileName + "\".");
 		}
 		catch(IOException e)
 		{

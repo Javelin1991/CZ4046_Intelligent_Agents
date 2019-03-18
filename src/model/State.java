@@ -1,6 +1,6 @@
 package model;
 
-/** A single state **/
+// A single state
 public class State {
 
 	private double _reward = 0.000;

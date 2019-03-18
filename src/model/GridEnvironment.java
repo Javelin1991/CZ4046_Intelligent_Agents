@@ -14,14 +14,12 @@ public class GridEnvironment {
 		duplicateGrid();
 	}
 
-	/** Returns the actual grid, i.e. a 2-D states array **/
+	// Returns the actual grid, i.e. a 2-D states array
 	public State[][] getGrid() {
 		return _grid;
 	}
 
-	/**
-	* Initialize the Grid Environment
-	*/
+	// Initialize the Grid Environment
 	public void buildGrid() {
 
 		// All grids (even walls) starts with reward of -0.040
@@ -70,9 +68,7 @@ public class GridEnvironment {
 		}
 	}
 
-	/**
-	* Used to 'expand' the maze
-	*/
+	// Used to 'expand' the maze
 	public void duplicateGrid() {
 
 		for(int row = 0 ; row < Const.NUM_ROWS ; row++) {
@@ -89,9 +85,7 @@ public class GridEnvironment {
 		}
 	}
 
-	/**
-	* Display the Grid Environment
-	*/
+	// Display the Grid Environment
 	public void displayGrid() {
 
 		StringBuilder sb = DisplayManager.frameTitle("Grid Environment");

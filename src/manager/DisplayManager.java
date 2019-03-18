@@ -7,7 +7,7 @@ import model.State;
 
 public class DisplayManager {
 
-	/** Display the policy, i.e. the action to be taken at each state **/
+	// Display the policy, i.e. the action to be taken at each state
 	public static void displayPolicy(final ActionUtilPair[][] utilArr) {
 		StringBuilder sb = frameTitle("Plot of Optimal Policy");
 		sb.append("|");
@@ -27,8 +27,8 @@ public class DisplayManager {
 			for (int col = 0; col < Const.NUM_COLS; col++) {
 				String util = utilArr[col][row].getActionStr();
 				int n = (9 - util.length())/2;
-    			String str = String.format("%1$"+n+"s", "");
-    			String str1 = String.format("%1$"+(n-1)+"s", "");
+				String str = String.format("%1$"+n+"s", "");
+				String str1 = String.format("%1$"+(n-1)+"s", "");
 				sb.append(str + util + str1 + "|");
 			}
 
@@ -48,9 +48,7 @@ public class DisplayManager {
 		System.out.println(sb.toString());
 	}
 
-	/*
-	* Display the utilities of all the (non-wall) states
-	*/
+	// Display the utilities of all the (non-wall) states
 	public static void displayUtilities(final State[][] grid, final ActionUtilPair[][] utilArr) {
 		StringBuilder sb = frameTitle("Utility Values of States");
 		for (int col = 0; col < Const.NUM_COLS; col++) {
@@ -65,9 +63,7 @@ public class DisplayManager {
 		System.out.println(sb.toString());
 	}
 
-	/*
-	* Display the utilities of all the states, in a grid format
-	*/
+	// Display the utilities of all the states, in a grid format
 	public static void displayUtilitiesGrid(final ActionUtilPair[][] utilArr) {
 
 		StringBuilder sb = frameTitle("Utilities of All States (Map)");
@@ -112,24 +108,26 @@ public class DisplayManager {
 		System.out.println(sb.toString());
 	}
 
-	/**
-	* Display the number of iterations
-	*/
+	// Display the number of iterations
 	public static void displayIterationsCount(int num) {
 		StringBuilder sb = frameTitle("Total Iteration Count");
 		sb.append("Iterations: " + num + "\n");
 		System.out.println(sb.toString());
 	}
 
-	/**
-	* Display the experiment setup
-	*/
-	public static void displayExperimentSetup() {
+	// Display the experiment setup for value iteration
+	public static void displayExperimentSetup(boolean isValueIteration) {
 		StringBuilder sb = frameTitle("Experiment Setup");
-		sb.append("Discount Factor       :        " + Const.DISCOUNT + "\n");
-		sb.append("Max Reward Value      :        " + Const.R_MAX + "\n");
-		sb.append("Constant 'c'   		 :        " + Const.C + "\n");
-		sb.append("Epsilon        		 :        " + Const.EPSILON + "\n");
+		if (isValueIteration) {
+			sb.append("Discount Factor\t\t" + ":\t" + Const.DISCOUNT + "\n");
+			sb.append("Max Reward\t\t" + ":\t" +Const.R_MAX + "\n");
+			sb.append("Constant 'c'\t\t" + ":\t" + Const.C + "\n");
+			sb.append("Epsilon Value\t\t" + ":\t" + Const.EPSILON + "\n");
+		} else {
+			sb.append("Discount\t:\t" + Const.DISCOUNT + "\n");
+			sb.append("k\t\t:\t" + Const.K + " (i.e. # of times simplified Bellman"
+			+ " update is repeated to produce the next utility estimate)\n\n");
+		}
 		System.out.print(sb.toString());
 	}
 

@@ -15,6 +15,11 @@ public class ValueIteration {
 
 	public static GridEnvironment _GridEnvironment = null;
 
+	private static List<ActionUtilPair[][]> lstActionUtilPairs;
+	private static State[][] _grid;
+	private static int iterations = 0;
+	private static double convergenceThreshold;
+
 	public static void main(String[] args) {
 
 		_GridEnvironment = new GridEnvironment();
@@ -22,32 +27,19 @@ public class ValueIteration {
 		// Displays the Grid Environment
 		_GridEnvironment.displayGrid();
 
-		State[][] _grid = _GridEnvironment.getGrid();
+		_grid = _GridEnvironment.getGrid();
 
-		// Displays the experiment setup
-		DisplayManager.displayExperimentSetup();
+		// Execute value iteration
+		lstActionUtilPairs = runValueIteration(_grid);
 
-		// Perform value iteration
-		List<ActionUtilPair[][]> lstActionUtilPairs = valueIteration(_grid);
-
-		// Output to csv file to plot utility estimates as a function of iteration
+		// Save utility estimates to csv file for plotting
 		FileManager.writeToFile(lstActionUtilPairs, "value_iteration_utilities");
 
-		// Final item in the list is the optimal policy derived by value iteration
-		final ActionUtilPair[][] optimalPolicy =
-				lstActionUtilPairs.get(lstActionUtilPairs.size() - 1);
-
-		// Display the utilities of all the (non-wall) states
-		DisplayManager.displayUtilities(_grid, optimalPolicy);
-
-		// Display the optimal policy
-		DisplayManager.displayPolicy(optimalPolicy);
-
-		// Display the utilities of all states
-		DisplayManager.displayUtilitiesGrid(optimalPolicy);
+		// Display experiment results
+		displayResults();
 	}
 
-	public static List<ActionUtilPair[][]> valueIteration(final State[][] grid) {
+	public static List<ActionUtilPair[][]> runValueIteration(final State[][] grid) {
 
 		ActionUtilPair[][] currUtilArr = new ActionUtilPair[Const.NUM_COLS][Const.NUM_ROWS];
 		ActionUtilPair[][] newUtilArr = new ActionUtilPair[Const.NUM_COLS][Const.NUM_ROWS];
@@ -59,48 +51,68 @@ public class ValueIteration {
 
 		List<ActionUtilPair[][]> lstActionUtilPairs = new ArrayList<>();
 
-		// For using span semi-norm instead of max norm
+		// Initialize delta to minimum double value first
 		double delta = Double.MIN_VALUE;
 
-		double convergenceCriteria =
-				Const.EPSILON * ((1.000 - Const.DISCOUNT) / Const.DISCOUNT);
-		System.out.printf("Convergence criteria: %.5f "
-				+ "(i.e. the span semi-norm must be < this value)%n%n", convergenceCriteria);
-		int numIterations = 0;
+		convergenceThreshold = Const.EPSILON * ((1.000 - Const.DISCOUNT) / Const.DISCOUNT);
 
+		// Initialize number of iterations
 		do {
 
 			UtilityManager.array2DCopy(newUtilArr, currUtilArr);
+			delta = Double.MIN_VALUE;
 
 			// Append to list of ActionUtilPair a copy of the existing actions & utilities
 			ActionUtilPair[][] currUtilArrCopy =
-					new ActionUtilPair[Const.NUM_COLS][Const.NUM_ROWS];
+			new ActionUtilPair[Const.NUM_COLS][Const.NUM_ROWS];
 			UtilityManager.array2DCopy(currUtilArr, currUtilArrCopy);
 			lstActionUtilPairs.add(currUtilArrCopy);
 
 			// For each state
 			for(int row = 0 ; row < Const.NUM_ROWS ; row++) {
-		        for(int col = 0 ; col < Const.NUM_COLS ; col++) {
+				for(int col = 0 ; col < Const.NUM_COLS ; col++) {
 
-		        	// Not necessary to calculate for walls
-		        	if(grid[col][row].isWall())
-		        		continue;
+					// Not necessary to calculate for walls
+					if(grid[col][row].isWall())
+					continue;
 
-		        	newUtilArr[col][row] =
-		        			UtilityManager.calcBestUtility(col, row, currUtilArr, grid);
+					newUtilArr[col][row] =
+					UtilityManager.calcBestUtility(col, row, currUtilArr, grid);
 
-		        	double newUtil = newUtilArr[col][row].getUtil();
-		        	double currUtil = currUtilArr[col][row].getUtil();
-		        	double newDelta = Math.abs(newUtil - currUtil);
+					double updatedUtil = newUtilArr[col][row].getUtil();
+					double currentUtil = currUtilArr[col][row].getUtil();
+					double updatedDelta = Math.abs(updatedUtil - currentUtil);
 
-		        	// Update maximum delta & minimum delta, if necessary
-		        	delta = Math.max(delta, newDelta);
-		        }
+					// Update delta, if the updated delta value is larger than the current one
+					delta = Math.max(delta, updatedDelta);
+				}
 			}
-			++numIterations;
-			// Terminating condition: Span semi-norm less than the convergence criteria
-		} while ((delta) >= convergenceCriteria);
-		DisplayManager.displayIterationsCount(numIterations);
+			iterations++;
+		} while ((delta) >= convergenceThreshold); //the iteration will cease when the delta is less than the convergence threshold
+
 		return lstActionUtilPairs;
+	}
+
+	private static void displayResults() {
+		// Final item in the list is the optimal policy derived by value iteration
+		final ActionUtilPair[][] optimalPolicy =
+		lstActionUtilPairs.get(lstActionUtilPairs.size() - 1);
+
+		// Displays the experiment setup
+		boolean isValueIteration = true;
+		DisplayManager.displayExperimentSetup(isValueIteration);
+		System.out.printf("Convergence Threshold\t:\t%.5f%n%n", convergenceThreshold);
+
+		// Display total number of iterations required for convergence
+		DisplayManager.displayIterationsCount(iterations);
+
+		// Display the utilities of all the (non-wall) states
+		DisplayManager.displayUtilities(_grid, optimalPolicy);
+
+		// Display the optimal policy
+		DisplayManager.displayPolicy(optimalPolicy);
+
+		// Display the utilities of all states
+		DisplayManager.displayUtilitiesGrid(optimalPolicy);
 	}
 }

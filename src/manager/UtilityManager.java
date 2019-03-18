@@ -11,29 +11,15 @@ import model.ActionUtilPair.Action;
 
 public class UtilityManager {
 
-	/**
-	 * Copy the contents from the source array to the destination array
-	 *
-	 * @param aSrc	Source array
-	 * @param aDest	Destination array
-	 */
+	//Copy the contents from the source array to the destination array
 	public static void array2DCopy(ActionUtilPair[][] aSrc, ActionUtilPair[][] aDest) {
 		for (int i = 0; i < aSrc.length; i++) {
 			System.arraycopy(aSrc[i], 0, aDest[i], 0, aSrc[i].length);
 		}
 	}
 
-	/**
-	 * Calculates the utility for each possible action<br>
-	 * Returns the action with maximal utility
-	 *
-	 * @param col			Column in the grid
-	 * @param row			Row in the grid
-	 * @param currUtilArr	Array of the current utility values
-	 * @param grid			The Grid World
-	 * @return				An ActionUtilPair that contains the best action,
-	 * 						and its corresponding utility
-	 */
+
+	//Calculates the utility for each possible action<br> and returns the action with maximal utility
 	public static ActionUtilPair calcBestUtility(final int col, final int row,
 			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
 
@@ -55,17 +41,8 @@ public class UtilityManager {
 		return chosenActionUtilPair;
 	}
 
-	/**
-	 * Calculates the utility for the given action
-	 *
-	 * @param action		The fixed action
-	 * @param col			Column in the grid
-	 * @param row			Row in the grid
-	 * @param actionUtilArr	Array of the current utility values
-	 * @param grid			The Grid World
-	 * @return				An ActionUtilPair that contains the fixed action,
-	 * 						and its corresponding utility
-	 */
+
+	//Calculates the utility for the given action
 	public static ActionUtilPair calcFixedUtility(final Action action, final int col,
 			final int row, final ActionUtilPair[][] actionUtilArr, final State[][] grid) {
 
@@ -93,15 +70,8 @@ public class UtilityManager {
 		return fixedActionUtil;
 	}
 
-	/**
-	 * Calculates the utility for attempting to move up
-	 *
-	 * @param col			Column in the grid
-	 * @param row			Row in the grid
-	 * @param currUtilArr	Array of the current utility values
-	 * @param grid			The Grid World
-	 * @return				The utility for moving up
-	 */
+
+	//Calculates the utility for attempting to move up
 	public static double calcActionUpUtility(final int col, final int row,
 			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
 
@@ -122,15 +92,8 @@ public class UtilityManager {
 		return actionUpUtility;
 	}
 
-	/**
-	 * Calculates the utility for attempting to move down
-	 *
-	 * @param col			Column in the grid
-	 * @param row			Row in the grid
-	 * @param currUtilArr	Array of the current utility values
-	 * @param grid			The Grid World
-	 * @return				The utility for moving down
-	 */
+
+	//Calculates the utility for attempting to move down
 	public static double calcActionDownUtility(final int col, final int row,
 			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
 
@@ -151,15 +114,7 @@ public class UtilityManager {
 		return actionDownUtility;
 	}
 
-	/**
-	 * Calculates the utility for attempting to move left
-	 *
-	 * @param col			Column in the grid
-	 * @param row			Row in the grid
-	 * @param currUtilArr	Array of the current utility values
-	 * @param grid			The Grid World
-	 * @return				The utility for moving left
-	 */
+	//Calculates the utility for attempting to move left
 	public static double calcActionLeftUtility(final int col, final int row,
 			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
 
@@ -180,15 +135,7 @@ public class UtilityManager {
 		return actionLeftUtility;
 	}
 
-	/**
-	 * Calculates the utility for attempting to move right
-	 *
-	 * @param col			Column in the grid
-	 * @param row			Row in the grid
-	 * @param currUtilArr	Array of the current utility values
-	 * @param grid			The Grid World
-	 * @return				The utility for moving right
-	 */
+	//Calculates the utility for attempting to move right
 	public static double calcActionRightUtility(final int col, final int row,
 			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
 
@@ -209,18 +156,7 @@ public class UtilityManager {
 		return actionRightUtility;
 	}
 
-	/**
-	 * Attempts to go up<br>
-	 * Succeeds if the target state is not out-of-bounds and not a wall<br>
-	 * Failure results in the agent staying in the same place as before<br>
-	 * Returns the utility value of the resulting state
-	 *
-	 * @param col			Current column
-	 * @param row			Current row
-	 * @param currUtilArr	Array of the current utility values
-	 * @param grid			The Grid World
-	 * @return				Utility value of the resulting state
-	 */
+	//Attempts to go up<br>
 	public static double goUp(final int col, final int row,
 			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
 
@@ -228,18 +164,7 @@ public class UtilityManager {
 				currUtilArr[col][row - 1].getUtil() : currUtilArr[col][row].getUtil();
 	}
 
-	/**
-	 * Attempts to go down<br>
-	 * Succeeds if the target state is not out-of-bounds and not a wall<br>
-	 * Failure results in the agent staying in the same place as before<br>
-	 * Returns the utility value of the resulting state
-	 *
-	 * @param col			Current column
-	 * @param row			Current row
-	 * @param currUtilArr	Array of the current utility values
-	 * @param grid			The Grid World
-	 * @return				Utility value of the resulting state
-	 */
+	//Attempts to go down<br>
 	public static double goDown(final int col, final int row,
 			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
 
@@ -247,18 +172,7 @@ public class UtilityManager {
 				currUtilArr[col][row + 1].getUtil() : currUtilArr[col][row].getUtil();
 	}
 
-	/**
-	 * Attempts to go left<br>
-	 * Succeeds if the target state is not out-of-bounds and not a wall<br>
-	 * Failure results in the agent staying in the same place as before<br>
-	 * Returns the utility value of the resulting state
-	 *
-	 * @param col			Current column
-	 * @param row			Current row
-	 * @param currUtilArr	Array of the current utility values
-	 * @param grid			The Grid World
-	 * @return				Utility value of the resulting state
-	 */
+	//Attempts to go left<br>
 	public static double goLeft(final int col, final int row,
 			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
 
@@ -266,18 +180,7 @@ public class UtilityManager {
 				currUtilArr[col - 1][row].getUtil() : currUtilArr[col][row].getUtil();
 	}
 
-	/**
-	 * Attempts to go right<br>
-	 * Succeeds if the target state is not out-of-bounds and not a wall<br>
-	 * Failure results in the agent staying in the same place as before<br>
-	 * Returns the utility value of the resulting state
-	 *
-	 * @param col			Current column
-	 * @param row			Current row
-	 * @param currUtilArr	Array of the current utility values
-	 * @param grid			The Grid World
-	 * @return				Utility value of the resulting state
-	 */
+	//Attempts to go right<br>
 	public static double goRight(final int col, final int row,
 			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
 

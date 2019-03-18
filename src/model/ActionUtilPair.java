@@ -2,9 +2,7 @@ package model;
 
 import java.util.Random;
 
-/**
- * Stores an action and utility pair for a given state
- */
+// Stores an action and utility pair for a given state
 public class ActionUtilPair implements Comparable<ActionUtilPair> {
 
 	private Action _action = null;
