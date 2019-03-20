@@ -1,7 +1,5 @@
 package model;
 
-import java.util.Random;
-
 public enum Action {
 	UP("^"),
 	DOWN("v"),
@@ -9,22 +7,14 @@ public enum Action {
 	RIGHT(">");
 
 	// String representation
-	private String _strRep;
+	private String strRep;
 
 	Action(String strRep) {
-		_strRep = strRep;
+		this.strRep = strRep;
 	}
 
 	@Override
 	public String toString() {
-		return _strRep;
-	}
-
-	private static final Action[] ACTIONS = values();
-	private static final int SIZE = ACTIONS.length;
-	private static final Random RANDOM = new Random();
-
-	public static Action getRandomAction() {
-		return ACTIONS[RANDOM.nextInt(SIZE)];
+		return strRep;
 	}
 }

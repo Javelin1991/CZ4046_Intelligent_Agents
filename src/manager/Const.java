@@ -40,9 +40,11 @@ public class Const {
 	public static final double R_MAX = 1.000;
 
 	// Constant c
-	public static final double C = 66;	//constant parameter to limit number of iterations
+	public static final double C = 50;	//constant parameter to adjust the maximum error allowed
 	// Epsilon e = c * Rmax
 	public static final double EPSILON = C * R_MAX;
+
+	public static final double UTILITY_UPPER_BOUND = R_MAX / (1 - DISCOUNT);
 
 	// Constant k (i.e. number of times simplified Bellman update is executed
 	// to produce the next utility estimate)

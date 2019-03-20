@@ -57,13 +57,13 @@ public class ValueIteration {
 		// Initialize number of iterations
 		do {
 
-			UtilityManager.cloneUtilities(newUtilArr, currUtilArr);
+			UtilityManager.updateUtilites(newUtilArr, currUtilArr);
 			delta = Double.MIN_VALUE;
 
-			// Append to list of Utility a copy of the existing actions & finalUtilities
+			// Append to list of Utility a copy of the existing actions & utilities
 			Utility[][] currUtilArrCopy =
 			new Utility[Const.NUM_COLS][Const.NUM_ROWS];
-			UtilityManager.cloneUtilities(currUtilArr, currUtilArrCopy);
+			UtilityManager.updateUtilites(currUtilArr, currUtilArrCopy);
 			finalUtilities.add(currUtilArrCopy);
 
 			// For each state
@@ -111,7 +111,7 @@ public class ValueIteration {
 		// Display the optimal policy
 		DisplayManager.displayPolicy(optimalPolicy);
 
-		// Display the finalUtilities of all states
+		// Display the final utilities of all states
 		DisplayManager.displayUtilitiesGrid(optimalPolicy);
 	}
 }

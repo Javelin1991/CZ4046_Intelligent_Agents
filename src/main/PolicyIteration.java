@@ -52,20 +52,20 @@ public class PolicyIteration {
 		}
 
 		finalUtilities = new ArrayList<>();
-		boolean bUnchanged = true;
+		boolean unchanged = true;
 
 		do {
 
 			// Append to list of Utility a copy of the existing actions & utilities
 			Utility[][] currUtilArrCopy =
 			new Utility[Const.NUM_COLS][Const.NUM_ROWS];
-			UtilityManager.cloneUtilities(currUtilArr, currUtilArrCopy);
+			UtilityManager.updateUtilites(currUtilArr, currUtilArrCopy);
 			finalUtilities.add(currUtilArrCopy);
 
 			// Policy estimation
 			Utility[][] policyActionUtil = UtilityManager.estimateNextUtilities(currUtilArr, grid);
 
-			bUnchanged = true;
+			unchanged = true;
 
 			// For each state - Policy improvement
 			for (int row = 0; row < Const.NUM_ROWS; row++) {
@@ -87,16 +87,16 @@ public class PolicyIteration {
 					if((bestActionUtil.getUtil() > pActionUtil.getUtil())) {
 
 						policyActionUtil[col][row].setAction(bestActionUtil.getAction());
-						bUnchanged = false;
+						unchanged = false;
 					}
 				}
 			}
 
-			UtilityManager.cloneUtilities(policyActionUtil, currUtilArr);
+			UtilityManager.updateUtilites(policyActionUtil, currUtilArr);
 
 			iterations++;
 
-		} while (!bUnchanged);
+		} while (!unchanged);
 	}
 
 

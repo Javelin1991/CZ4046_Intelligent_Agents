@@ -50,7 +50,7 @@ public class UtilityManager {
 		return fixedActionUtil;
 	}
 
-	//Simplified Bellman update to produce the next utility estimate
+	// Simplified Bellman update to produce the next utility estimate
 	public static Utility[][] estimateNextUtilities(final Utility[][] currUtilArr, final State[][] grid) {
 
 		Utility[][] currUtilArrCpy = new Utility[Const.NUM_COLS][Const.NUM_ROWS];
@@ -87,7 +87,7 @@ public class UtilityManager {
 				}
 			}
 
-			UtilityManager.cloneUtilities(newUtilArr, currUtilArrCpy);
+			UtilityManager.updateUtilites(newUtilArr, currUtilArrCpy);
 
 		} while(++k < Const.K);
 
@@ -158,7 +158,7 @@ public class UtilityManager {
 		return actionLeftUtility;
 	}
 
-	//Calculates the utility for attempting to move right
+	// Calculates the utility for attempting to move right
 	public static double getActionRightUtility(final int col, final int row,
 		final Utility[][] currUtilArr, final State[][] grid) {
 
@@ -179,7 +179,7 @@ public class UtilityManager {
 		return actionRightUtility;
 	}
 
-	//Attempts to move up<br>
+	// Attempts to move up
 	public static double moveUp(final int col, final int row, final Utility[][] currUtilArr, final State[][] grid) {
 
 		if (row - 1 >= 0 && !grid[col][row - 1].isWall()) {
@@ -188,7 +188,7 @@ public class UtilityManager {
 		return currUtilArr[col][row].getUtil();
 	}
 
-	//Attempts to move down<br>
+	// Attempts to move down
 	public static double moveDown(final int col, final int row, final Utility[][] currUtilArr, final State[][] grid) {
 		if (row + 1 < Const.NUM_ROWS && !grid[col][row + 1].isWall()) {
 			return currUtilArr[col][row + 1].getUtil();
@@ -196,7 +196,7 @@ public class UtilityManager {
 		return currUtilArr[col][row].getUtil();
 	}
 
-	//Attempts to move left<br>
+	// Attempts to move left
 	public static double moveLeft(final int col, final int row, final Utility[][] currUtilArr, final State[][] grid) {
 		if (col - 1 >= 0 && !grid[col - 1][row].isWall()) {
 			return currUtilArr[col - 1][row].getUtil();
@@ -204,7 +204,7 @@ public class UtilityManager {
 		return currUtilArr[col][row].getUtil();
 	}
 
-	//Attempts to move right<br>
+	// Attempts to move right
 	public static double moveRight(final int col, final int row, final Utility[][] currUtilArr, final State[][] grid) {
 		if (col + 1 < Const.NUM_COLS && !grid[col + 1][row].isWall()) {
 			return currUtilArr[col + 1][row].getUtil();
@@ -212,8 +212,8 @@ public class UtilityManager {
 		return currUtilArr[col][row].getUtil();
 	}
 
-	//Copy the contents from the source array to the destination array
-	public static void cloneUtilities(Utility[][] aSrc, Utility[][] aDest) {
+	// Copy the contents from the source array to the destination array
+	public static void updateUtilites(Utility[][] aSrc, Utility[][] aDest) {
 		for (int i = 0; i < aSrc.length; i++) {
 			System.arraycopy(aSrc[i], 0, aDest[i], 0, aSrc[i].length);
 		}

@@ -175,13 +175,13 @@ public class DisplayManager {
 	// Display the experiment setup for value iteration
 	public static void displayExperimentSetup(boolean isValueIteration, double convergeThreshold) {
 		StringBuilder sb = frameTitle("Experiment Setup");
-		String threshold = String.format("%.5f", convergeThreshold);
 		if (isValueIteration) {
 			sb.append("Discount Factor\t\t" + ":\t" + Const.DISCOUNT + "\n");
-			sb.append("Max Reward\t\t" + ":\t" +Const.R_MAX + "\n");
+			sb.append("Utility Upper Bound\t" + ":\t" + String.format("%.5g", Const.UTILITY_UPPER_BOUND) + "\n");
+			sb.append("Max Reward(Rmax)\t" + ":\t" + Const.R_MAX + "\n");
 			sb.append("Constant 'c'\t\t" + ":\t" + Const.C + "\n");
-			sb.append("Epsilon Value\t\t" + ":\t" + Const.EPSILON + "\n");
-			sb.append("Convergence Threshold\t:\t" + threshold + "\n\n");
+			sb.append("Epsilon Value(c * Rmax)\t" + ":\t" + Const.EPSILON + "\n");
+			sb.append("Convergence Threshold\t:\t" + String.format("%.5f", convergeThreshold) + "\n\n");
 		} else {
 			sb.append("Discount\t:\t" + Const.DISCOUNT + "\n");
 			sb.append("k\t\t:\t" + Const.K + " (i.e. # of times simplified Bellman"

@@ -1,43 +1,41 @@
 package model;
 
-import java.util.Random;
-
 // Stores an action and utility pair for a given state
 public class Utility implements Comparable<Utility> {
 
-	private Action _action = null;
-	private double _util = 0.000;
+	private Action action = null;
+	private double util = 0.000;
 
 	public Utility() {
-		_action = null;
-		_util = 0.000;
+		action = null;
+		util = 0.000;
 	}
 
 	public Utility(Action action, double util) {
-		_action = action;
-		_util = util;
+		this.action = action;
+		this.util = util;
 	}
 
 	public Action getAction() {
-		return _action;
+		return action;
 	}
 
 	public String getActionStr() {
 
 		// No action at wall, otherwise return one of the 4 possible actions
-		return _action != null ? _action.toString() : " Wall";
+		return action != null ? action.toString() : " Wall";
 	}
 
 	public void setAction(Action action) {
-		_action = action;
+		this.action = action;
 	}
 
 	public double getUtil() {
-		return _util;
+		return util;
 	}
 
 	public void setUtil(double util) {
-		_util = util;
+		this.util = util;
 	}
 
 	@Override
