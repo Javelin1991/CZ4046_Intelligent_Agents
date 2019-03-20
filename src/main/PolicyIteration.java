@@ -3,8 +3,8 @@ package main;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.ActionUtilPair;
-import model.ActionUtilPair.Action;
+import model.Utility;
+import model.Action;
 import model.GridEnvironment;
 import model.State;
 
@@ -15,57 +15,55 @@ import manager.DisplayManager;
 
 public class PolicyIteration {
 
-	public static GridEnvironment _GridEnvironment = null;
-
-	private static List<ActionUtilPair[][]> lstActionUtilPairs;
-	private static State[][] _grid;
+	public static GridEnvironment gridEnvironment = null;
+	private static List<Utility[][]> finalUtilities;
+	private static State[][] grid;
 	private static int iterations = 0;
+	private static boolean isValueIteration = false;
 
 	public static void main(String[] args) {
 
-		_GridEnvironment = new GridEnvironment();
-		// Displays the Grid Environment
-		_GridEnvironment.displayGrid();
-
-		_grid = _GridEnvironment.getGrid();
+		// Initialize grid environment
+		gridEnvironment = new GridEnvironment();
+		grid = gridEnvironment.getGrid();
 
 		// Execute policy iteration
-		lstActionUtilPairs = runPolicyIteration(_grid);
-
-		// Save utility estimates to csv file for plotting
-		FileManager.writeToFile(lstActionUtilPairs, "policy_iteration_utilities");
+		runPolicyIteration(grid);
 
 		// Display experiment results
 		displayResults();
+
+		// Save utility estimates to csv file for plotting
+		FileManager.writeToFile(finalUtilities, "policy_iteration_utilities");
 	}
 
 
-	public static List<ActionUtilPair[][]> runPolicyIteration(final State[][] grid) {
+	public static void runPolicyIteration(final State[][] grid) {
 
-		ActionUtilPair[][] currUtilArr = new ActionUtilPair[Const.NUM_COLS][Const.NUM_ROWS];
+		Utility[][] currUtilArr = new Utility[Const.NUM_COLS][Const.NUM_ROWS];
 		for (int col = 0; col < Const.NUM_COLS; col++) {
 			for (int row = 0; row < Const.NUM_ROWS; row++) {
 
-				currUtilArr[col][row] = new ActionUtilPair();
+				currUtilArr[col][row] = new Utility();
 				if (!grid[col][row].isWall()) {
 					currUtilArr[col][row].setAction(Action.UP);
 				}
 			}
 		}
 
-		List<ActionUtilPair[][]> lstActionUtilPairs = new ArrayList<>();
+		finalUtilities = new ArrayList<>();
 		boolean bUnchanged = true;
 
 		do {
 
-			// Append to list of ActionUtilPair a copy of the existing actions & utilities
-			ActionUtilPair[][] currUtilArrCopy =
-			new ActionUtilPair[Const.NUM_COLS][Const.NUM_ROWS];
-			UtilityManager.array2DCopy(currUtilArr, currUtilArrCopy);
-			lstActionUtilPairs.add(currUtilArrCopy);
+			// Append to list of Utility a copy of the existing actions & utilities
+			Utility[][] currUtilArrCopy =
+			new Utility[Const.NUM_COLS][Const.NUM_ROWS];
+			UtilityManager.cloneUtilities(currUtilArr, currUtilArrCopy);
+			finalUtilities.add(currUtilArrCopy);
 
 			// Policy estimation
-			ActionUtilPair[][] policyActionUtil = produceUtilEst(currUtilArr, grid);
+			Utility[][] policyActionUtil = UtilityManager.estimateNextUtilities(currUtilArr, grid);
 
 			bUnchanged = true;
 
@@ -78,12 +76,12 @@ public class PolicyIteration {
 					continue;
 
 					// Best calculated action based on maximizing utility
-					ActionUtilPair bestActionUtil =
-					UtilityManager.calcBestUtility(col, row, policyActionUtil, grid);
+					Utility bestActionUtil =
+					UtilityManager.getBestUtility(col, row, policyActionUtil, grid);
 
 					// Action and the corresponding utlity based on current policy
 					Action policyAction = policyActionUtil[col][row].getAction();
-					ActionUtilPair pActionUtil = UtilityManager.calcFixedUtility(
+					Utility pActionUtil = UtilityManager.getFixedUtility(
 					policyAction, col, row, policyActionUtil, grid);
 
 					if((bestActionUtil.getUtil() > pActionUtil.getUtil())) {
@@ -94,72 +92,30 @@ public class PolicyIteration {
 				}
 			}
 
-			UtilityManager.array2DCopy(policyActionUtil, currUtilArr);
+			UtilityManager.cloneUtilities(policyActionUtil, currUtilArr);
 
 			iterations++;
 
 		} while (!bUnchanged);
-		return lstActionUtilPairs;
 	}
 
-	//Simplified Bellman update to produce the next utility estimate
-	public static ActionUtilPair[][] produceUtilEst(final ActionUtilPair[][] currUtilArr,
-	final State[][] grid) {
-
-		ActionUtilPair[][] currUtilArrCpy = new ActionUtilPair[Const.NUM_COLS][Const.NUM_ROWS];
-		for (int col = 0; col < Const.NUM_COLS; col++) {
-			for (int row = 0; row < Const.NUM_ROWS; row++) {
-				currUtilArrCpy[col][row] = new ActionUtilPair(
-				currUtilArr[col][row].getAction(),
-				currUtilArr[col][row].getUtil());
-			}
-		}
-
-		ActionUtilPair[][] newUtilArr = new ActionUtilPair[Const.NUM_COLS][Const.NUM_ROWS];
-		for (int col = 0; col < Const.NUM_COLS; col++) {
-			for (int row = 0; row < Const.NUM_ROWS; row++) {
-				newUtilArr[col][row] = new ActionUtilPair();
-			}
-		}
-
-		int k = 0;
-		do {
-
-			// For each state
-			for (int row = 0; row < Const.NUM_ROWS; row++) {
-				for (int col = 0; col < Const.NUM_COLS; col++) {
-
-					// Not necessary to calculate for walls
-					if (grid[col][row].isWall())
-					continue;
-
-					// Updates the utility based on the action stated in the policy
-					Action action = currUtilArrCpy[col][row].getAction();
-					newUtilArr[col][row] = UtilityManager.calcFixedUtility(action,
-					col, row, currUtilArrCpy, grid);
-				}
-			}
-
-			UtilityManager.array2DCopy(newUtilArr, currUtilArrCpy);
-
-		} while(++k < Const.K);
-
-		return newUtilArr;
-	}
 
 	private static void displayResults() {
 		// Final item in the list is the optimal policy derived by policy iteration
-		final ActionUtilPair[][] optimalPolicy =
-		lstActionUtilPairs.get(lstActionUtilPairs.size() - 1);
+		final Utility[][] optimalPolicy =
+		finalUtilities.get(finalUtilities.size() - 1);
+
+		// Displays the Grid Environment
+		DisplayManager.displayGrid(grid);
+
 		// Displays the experiment setup
-		boolean isValueIteration = false;
-		DisplayManager.displayExperimentSetup(isValueIteration);
+		DisplayManager.displayExperimentSetup(isValueIteration, 0);
 
 		// Display total number of iterations required for convergence
 		DisplayManager.displayIterationsCount(iterations);
 
 		// Display the utilities of all the (non-wall) states
-		DisplayManager.displayUtilities(_grid, optimalPolicy);
+		DisplayManager.displayUtilities(grid, optimalPolicy);
 
 		// Display the optimal policy
 		DisplayManager.displayPolicy(optimalPolicy);

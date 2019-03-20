@@ -14,8 +14,8 @@ public class Const {
 
 	/// Transition model
 	public static final double PROB_INTENT = 0.800;
-	public static final double PROB_CCW = 0.100;
-	public static final double PROB_CW = 0.100;
+	public static final double PROB_LEFT = 0.100;
+	public static final double PROB_RIGHT = 0.100;
 
 	// Delimiters
 	public static final String GRID_DELIM = ";";
@@ -29,14 +29,14 @@ public class Const {
 	// Agent's starting position
 	// NOTE: A remarkable consequence of using discounted utilities with infinite
 	// horizons is that the optimal policy is independent of the starting state
-	public static final int AGENT_START_COL = 2;
-	public static final int AGENT_START_ROW = 3;
+
+	public static final int AGENT_START_COL = 2; // first col starts from 0
+	public static final int AGENT_START_ROW = 3; // first row starts from 0
 
 	// Discount factor
 	public static final double DISCOUNT =  0.990;
 
 	// Rmax
-	// public static final double R_MAX = 1.000;
 	public static final double R_MAX = 1.000;
 
 	// Constant c

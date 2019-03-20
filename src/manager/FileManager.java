@@ -7,11 +7,11 @@ import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 
-import model.ActionUtilPair;
+import model.Utility;
 
 public class FileManager
 {
-	public static void writeToFile(List<ActionUtilPair[][]> lstActionUtilPairs, String fileName) {
+	public static void writeToFile(List<Utility[][]> lstUtilitys, String fileName) {
 
 		StringBuilder sb = new StringBuilder();
 		String pattern = "00.000";
@@ -20,10 +20,10 @@ public class FileManager
 		for (int col = 0; col < Const.NUM_COLS; col++) {
 			for (int row = 0; row < Const.NUM_ROWS; row++) {
 
-				Iterator<ActionUtilPair[][]> iter = lstActionUtilPairs.iterator();
+				Iterator<Utility[][]> iter = lstUtilitys.iterator();
 				while(iter.hasNext()) {
 
-					ActionUtilPair[][] actionUtil = iter.next();
+					Utility[][] actionUtil = iter.next();
 					sb.append(decimalFormat.format(
 							actionUtil[col][row].getUtil()).substring(0, 6));
 

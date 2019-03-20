@@ -1,90 +1,114 @@
 package manager;
 
 import java.util.ArrayList;
-
 import java.util.Collections;
 import java.util.List;
 
-import model.ActionUtilPair;
+import model.Utility;
 import model.State;
-import model.ActionUtilPair.Action;
+import model.Action;
 
 public class UtilityManager {
 
-	//Copy the contents from the source array to the destination array
-	public static void array2DCopy(ActionUtilPair[][] aSrc, ActionUtilPair[][] aDest) {
-		for (int i = 0; i < aSrc.length; i++) {
-			System.arraycopy(aSrc[i], 0, aDest[i], 0, aSrc[i].length);
-		}
-	}
+	//Calculates the utility for each possible action and returns the action with maximal utility
+	public static Utility getBestUtility(final int col, final int row, final Utility[][] currUtilArr, final State[][] grid) {
 
+		List<Utility> utilities = new ArrayList<>();
 
-	//Calculates the utility for each possible action<br> and returns the action with maximal utility
-	public static ActionUtilPair calcBestUtility(final int col, final int row,
-			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
+		utilities.add(new Utility(Action.UP, getActionUpUtility(col, row, currUtilArr, grid)));
+		utilities.add(new Utility(Action.DOWN, getActionDownUtility(col, row, currUtilArr, grid)));
+		utilities.add(new Utility(Action.LEFT, getActionLeftUtility(col, row, currUtilArr, grid)));
+		utilities.add(new Utility(Action.RIGHT, getActionRightUtility(col, row, currUtilArr, grid)));
 
-		List<ActionUtilPair> lstActionUtilPairs = new ArrayList<>();
-
-		lstActionUtilPairs.add(new ActionUtilPair(ActionUtilPair.Action.UP,
-				calcActionUpUtility(col, row, currUtilArr, grid)));
-		lstActionUtilPairs.add(new ActionUtilPair(ActionUtilPair.Action.DOWN,
-				calcActionDownUtility(col, row, currUtilArr, grid)));
-		lstActionUtilPairs.add(new ActionUtilPair(ActionUtilPair.Action.LEFT,
-				calcActionLeftUtility(col, row, currUtilArr, grid)));
-		lstActionUtilPairs.add(new ActionUtilPair(ActionUtilPair.Action.RIGHT,
-				calcActionRightUtility(col, row, currUtilArr, grid)));
-
-		Collections.sort(lstActionUtilPairs);
-
-		ActionUtilPair chosenActionUtilPair = lstActionUtilPairs.get(0);
-
-		return chosenActionUtilPair;
+		Collections.sort(utilities);
+		Utility bestUtility = utilities.get(0);
+		return bestUtility;
 	}
 
 
 	//Calculates the utility for the given action
-	public static ActionUtilPair calcFixedUtility(final Action action, final int col,
-			final int row, final ActionUtilPair[][] actionUtilArr, final State[][] grid) {
+	public static Utility getFixedUtility(final Action action, final int col,
+		final int row, final Utility[][] actionUtilArr, final State[][] grid) {
 
-		ActionUtilPair fixedActionUtil = null;
+		Utility fixedActionUtil = null;
 
 		switch (action) {
-		case UP:
-			fixedActionUtil = new ActionUtilPair(Action.UP,
-					UtilityManager.calcActionUpUtility(col, row, actionUtilArr, grid));
+			case UP:
+			fixedActionUtil = new Utility(Action.UP, UtilityManager.getActionUpUtility(col, row, actionUtilArr, grid));
 			break;
-		case DOWN:
-			fixedActionUtil = new ActionUtilPair(Action.DOWN,
-					UtilityManager.calcActionDownUtility(col, row, actionUtilArr, grid));
+			case DOWN:
+			fixedActionUtil = new Utility(Action.DOWN, UtilityManager.getActionDownUtility(col, row, actionUtilArr, grid));
 			break;
-		case LEFT:
-			fixedActionUtil = new ActionUtilPair(Action.LEFT,
-					UtilityManager.calcActionLeftUtility(col, row, actionUtilArr, grid));
+			case LEFT:
+			fixedActionUtil = new Utility(Action.LEFT, UtilityManager.getActionLeftUtility(col, row, actionUtilArr, grid));
 			break;
-		case RIGHT:
-			fixedActionUtil = new ActionUtilPair(Action.RIGHT,
-					UtilityManager.calcActionRightUtility(col, row, actionUtilArr, grid));
+			case RIGHT:
+			fixedActionUtil = new Utility(Action.RIGHT, UtilityManager.getActionRightUtility(col, row, actionUtilArr, grid));
 			break;
 		}
 
 		return fixedActionUtil;
 	}
 
+	//Simplified Bellman update to produce the next utility estimate
+	public static Utility[][] estimateNextUtilities(final Utility[][] currUtilArr, final State[][] grid) {
+
+		Utility[][] currUtilArrCpy = new Utility[Const.NUM_COLS][Const.NUM_ROWS];
+		for (int col = 0; col < Const.NUM_COLS; col++) {
+			for (int row = 0; row < Const.NUM_ROWS; row++) {
+				currUtilArrCpy[col][row] = new Utility(
+				currUtilArr[col][row].getAction(),
+				currUtilArr[col][row].getUtil());
+			}
+		}
+
+		Utility[][] newUtilArr = new Utility[Const.NUM_COLS][Const.NUM_ROWS];
+		for (int col = 0; col < Const.NUM_COLS; col++) {
+			for (int row = 0; row < Const.NUM_ROWS; row++) {
+				newUtilArr[col][row] = new Utility();
+			}
+		}
+
+		int k = 0;
+		do {
+
+			// For each state
+			for (int row = 0; row < Const.NUM_ROWS; row++) {
+				for (int col = 0; col < Const.NUM_COLS; col++) {
+
+					// Not necessary to calculate for walls
+					if (grid[col][row].isWall())
+					continue;
+
+					// Updates the utility based on the action stated in the policy
+					Action action = currUtilArrCpy[col][row].getAction();
+					newUtilArr[col][row] = UtilityManager.getFixedUtility(action,
+					col, row, currUtilArrCpy, grid);
+				}
+			}
+
+			UtilityManager.cloneUtilities(newUtilArr, currUtilArrCpy);
+
+		} while(++k < Const.K);
+
+		return newUtilArr;
+	}
+
 
 	//Calculates the utility for attempting to move up
-	public static double calcActionUpUtility(final int col, final int row,
-			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
+	public static double getActionUpUtility(final int col, final int row,
+		final Utility[][] currUtilArr, final State[][] grid) {
 
 		double actionUpUtility = 0.000;
 
 		// Intends to move up
-		actionUpUtility += Const.PROB_INTENT * goUp(col, row, currUtilArr, grid);
+		actionUpUtility += Const.PROB_INTENT * moveUp(col, row, currUtilArr, grid);
 
-		// Intends to move up, but goes right (CW) instead
-		actionUpUtility += Const.PROB_CW * goRight(col, row, currUtilArr, grid);
+		// Intends to move up, but moves right instead
+		actionUpUtility += Const.PROB_RIGHT * moveRight(col, row, currUtilArr, grid);
 
-		// Intends to move up, but goes left (CCW) instead
-		actionUpUtility += Const.PROB_CCW * goLeft(col, row, currUtilArr, grid);
+		// Intends to move up, but moves left instead
+		actionUpUtility += Const.PROB_LEFT * moveLeft(col, row, currUtilArr, grid);
 
 		// Final utility
 		actionUpUtility = grid[col][row].getReward() + Const.DISCOUNT * actionUpUtility;
@@ -92,21 +116,20 @@ public class UtilityManager {
 		return actionUpUtility;
 	}
 
-
 	//Calculates the utility for attempting to move down
-	public static double calcActionDownUtility(final int col, final int row,
-			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
+	public static double getActionDownUtility(final int col, final int row,
+	final Utility[][] currUtilArr, final State[][] grid) {
 
 		double actionDownUtility = 0.000;
 
 		// Intends to move down
-		actionDownUtility += Const.PROB_INTENT * goDown(col, row, currUtilArr, grid);
+		actionDownUtility += Const.PROB_INTENT * moveDown(col, row, currUtilArr, grid);
 
-		// Intends to move down, but goes left (CW) instead
-		actionDownUtility += Const.PROB_CW * goLeft(col, row, currUtilArr, grid);
+		// Intends to move down, but moves left instead
+		actionDownUtility += Const.PROB_LEFT * moveLeft(col, row, currUtilArr, grid);
 
-		// Intends to move down, but goes right (CCW) instead
-		actionDownUtility += Const.PROB_CCW * goRight(col, row, currUtilArr, grid);
+		// Intends to move down, but moves right instead
+		actionDownUtility += Const.PROB_RIGHT * moveRight(col, row, currUtilArr, grid);
 
 		// Final utility
 		actionDownUtility = grid[col][row].getReward() + Const.DISCOUNT * actionDownUtility;
@@ -115,19 +138,19 @@ public class UtilityManager {
 	}
 
 	//Calculates the utility for attempting to move left
-	public static double calcActionLeftUtility(final int col, final int row,
-			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
+	public static double getActionLeftUtility(final int col, final int row,
+		final Utility[][] currUtilArr, final State[][] grid) {
 
 		double actionLeftUtility = 0.000;
 
 		// Intends to move left
-		actionLeftUtility += Const.PROB_INTENT * goLeft(col, row, currUtilArr, grid);
+		actionLeftUtility += Const.PROB_INTENT * moveLeft(col, row, currUtilArr, grid);
 
-		// Intends to move left, but goes up (CW) instead
-		actionLeftUtility += Const.PROB_CW * goUp(col, row, currUtilArr, grid);
+		// Intends to move left, but moves up instead
+		actionLeftUtility += Const.PROB_RIGHT * moveUp(col, row, currUtilArr, grid);
 
-		// Intends to move left, but goes down (CCW) instead
-		actionLeftUtility += Const.PROB_CCW * goDown(col, row, currUtilArr, grid);
+		// Intends to move left, but moves down instead
+		actionLeftUtility += Const.PROB_LEFT * moveDown(col, row, currUtilArr, grid);
 
 		// Final utility
 		actionLeftUtility = grid[col][row].getReward() + Const.DISCOUNT * actionLeftUtility;
@@ -136,19 +159,19 @@ public class UtilityManager {
 	}
 
 	//Calculates the utility for attempting to move right
-	public static double calcActionRightUtility(final int col, final int row,
-			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
+	public static double getActionRightUtility(final int col, final int row,
+		final Utility[][] currUtilArr, final State[][] grid) {
 
 		double actionRightUtility = 0.000;
 
 		// Intends to move right
-		actionRightUtility += Const.PROB_INTENT * goRight(col, row, currUtilArr, grid);
+		actionRightUtility += Const.PROB_INTENT * moveRight(col, row, currUtilArr, grid);
 
-		// Intends to move right, but goes down (CW) instead
-		actionRightUtility += Const.PROB_CW * goDown(col, row, currUtilArr, grid);
+		// Intends to move right, but moves down instead
+		actionRightUtility += Const.PROB_RIGHT * moveDown(col, row, currUtilArr, grid);
 
-		// Intends to move right, but goes up (CCW) instead
-		actionRightUtility += Const.PROB_CCW * goUp(col, row, currUtilArr, grid);
+		// Intends to move right, but moves up instead
+		actionRightUtility += Const.PROB_LEFT * moveUp(col, row, currUtilArr, grid);
 
 		// Final utility
 		actionRightUtility = grid[col][row].getReward() + Const.DISCOUNT * actionRightUtility;
@@ -156,35 +179,43 @@ public class UtilityManager {
 		return actionRightUtility;
 	}
 
-	//Attempts to go up<br>
-	public static double goUp(final int col, final int row,
-			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
+	//Attempts to move up<br>
+	public static double moveUp(final int col, final int row, final Utility[][] currUtilArr, final State[][] grid) {
 
-		return (row - 1 >= 0 && !grid[col][row - 1].isWall()) ?
-				currUtilArr[col][row - 1].getUtil() : currUtilArr[col][row].getUtil();
+		if (row - 1 >= 0 && !grid[col][row - 1].isWall()) {
+			return currUtilArr[col][row - 1].getUtil();
+		}
+		return currUtilArr[col][row].getUtil();
 	}
 
-	//Attempts to go down<br>
-	public static double goDown(final int col, final int row,
-			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
-
-		return (row + 1 < Const.NUM_ROWS && !grid[col][row + 1].isWall()) ?
-				currUtilArr[col][row + 1].getUtil() : currUtilArr[col][row].getUtil();
+	//Attempts to move down<br>
+	public static double moveDown(final int col, final int row, final Utility[][] currUtilArr, final State[][] grid) {
+		if (row + 1 < Const.NUM_ROWS && !grid[col][row + 1].isWall()) {
+			return currUtilArr[col][row + 1].getUtil();
+		}
+		return currUtilArr[col][row].getUtil();
 	}
 
-	//Attempts to go left<br>
-	public static double goLeft(final int col, final int row,
-			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
-
-		return (col - 1 >= 0 && !grid[col - 1][row].isWall()) ?
-				currUtilArr[col - 1][row].getUtil() : currUtilArr[col][row].getUtil();
+	//Attempts to move left<br>
+	public static double moveLeft(final int col, final int row, final Utility[][] currUtilArr, final State[][] grid) {
+		if (col - 1 >= 0 && !grid[col - 1][row].isWall()) {
+			return currUtilArr[col - 1][row].getUtil();
+		}
+		return currUtilArr[col][row].getUtil();
 	}
 
-	//Attempts to go right<br>
-	public static double goRight(final int col, final int row,
-			final ActionUtilPair[][] currUtilArr, final State[][] grid) {
+	//Attempts to move right<br>
+	public static double moveRight(final int col, final int row, final Utility[][] currUtilArr, final State[][] grid) {
+		if (col + 1 < Const.NUM_COLS && !grid[col + 1][row].isWall()) {
+			return currUtilArr[col + 1][row].getUtil();
+		}
+		return currUtilArr[col][row].getUtil();
+	}
 
-		return (col + 1 < Const.NUM_COLS && !grid[col + 1][row].isWall()) ?
-				currUtilArr[col + 1][row].getUtil() : currUtilArr[col][row].getUtil();
+	//Copy the contents from the source array to the destination array
+	public static void cloneUtilities(Utility[][] aSrc, Utility[][] aDest) {
+		for (int i = 0; i < aSrc.length; i++) {
+			System.arraycopy(aSrc[i], 0, aDest[i], 0, aSrc[i].length);
+		}
 	}
 }

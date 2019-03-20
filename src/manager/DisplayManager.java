@@ -2,13 +2,70 @@ package manager;
 
 import java.text.DecimalFormat;
 
-import model.ActionUtilPair;
+import model.Utility;
 import model.State;
 
 public class DisplayManager {
 
+	// Display the Grid Environment
+	public static void displayGrid(State[][] grid) {
+		StringBuilder sb = DisplayManager.frameTitle("Grid Environment");
+		sb.append("|");
+		for(int col = 0 ; col < Const.NUM_COLS ; col++) {
+			sb.append("--------|");
+		}
+		sb.append("\n");
+
+		for (int row = 0; row < Const.NUM_ROWS; row++) {
+
+			sb.append("|");
+			for(int col = 0 ; col < Const.NUM_COLS ; col++) {
+				sb.append("--------|".replace('-', ' '));
+			}
+			sb.append("\n");
+
+			sb.append("|");
+			for(int col = 0 ; col < Const.NUM_COLS ; col++) {
+
+				State state = grid[col][row];
+				String temp;
+				if (col == Const.AGENT_START_COL && row == Const.AGENT_START_ROW) {
+					temp = " Start";
+				} else if(state.isWall()) {
+					temp = "Wall";
+				}
+				else if(state.getReward() != Const.WHITE_REWARD) {
+					temp = Double.toString(state.getReward());
+					if (temp.charAt(0) != '-') {
+						temp = " " + temp;
+					}
+				}
+				else {
+					temp = String.format("%4s", "");
+				}
+				int n = (8 - temp.length())/2;
+				String str = String.format("%1$"+n+"s", "");
+				sb.append(str + temp + str + "|");
+			}
+
+			sb.append("\n|");
+			for(int col = 0 ; col < Const.NUM_COLS ; col++) {
+				sb.append("--------|".replace('-', ' '));
+			}
+			sb.append("\n");
+
+			sb.append("|");
+			for(int col = 0 ; col < Const.NUM_COLS ; col++) {
+				sb.append("--------|");
+			}
+			sb.append("\n");
+		}
+
+		System.out.println(sb.toString());
+	}
+
 	// Display the policy, i.e. the action to be taken at each state
-	public static void displayPolicy(final ActionUtilPair[][] utilArr) {
+	public static void displayPolicy(final Utility[][] utilArr) {
 		StringBuilder sb = frameTitle("Plot of Optimal Policy");
 		sb.append("|");
 		for(int col = 0 ; col < Const.NUM_COLS ; col++) {
@@ -49,7 +106,7 @@ public class DisplayManager {
 	}
 
 	// Display the utilities of all the (non-wall) states
-	public static void displayUtilities(final State[][] grid, final ActionUtilPair[][] utilArr) {
+	public static void displayUtilities(final State[][] grid, final Utility[][] utilArr) {
 		StringBuilder sb = frameTitle("Utility Values of States");
 		for (int col = 0; col < Const.NUM_COLS; col++) {
 			for (int row = 0; row < Const.NUM_ROWS; row++) {
@@ -64,7 +121,7 @@ public class DisplayManager {
 	}
 
 	// Display the utilities of all the states, in a grid format
-	public static void displayUtilitiesGrid(final ActionUtilPair[][] utilArr) {
+	public static void displayUtilitiesGrid(final Utility[][] utilArr) {
 
 		StringBuilder sb = frameTitle("Utilities of All States (Map)");
 
@@ -116,13 +173,15 @@ public class DisplayManager {
 	}
 
 	// Display the experiment setup for value iteration
-	public static void displayExperimentSetup(boolean isValueIteration) {
+	public static void displayExperimentSetup(boolean isValueIteration, double convergeThreshold) {
 		StringBuilder sb = frameTitle("Experiment Setup");
+		String threshold = String.format("%.5f", convergeThreshold);
 		if (isValueIteration) {
 			sb.append("Discount Factor\t\t" + ":\t" + Const.DISCOUNT + "\n");
 			sb.append("Max Reward\t\t" + ":\t" +Const.R_MAX + "\n");
 			sb.append("Constant 'c'\t\t" + ":\t" + Const.C + "\n");
 			sb.append("Epsilon Value\t\t" + ":\t" + Const.EPSILON + "\n");
+			sb.append("Convergence Threshold\t:\t" + threshold + "\n\n");
 		} else {
 			sb.append("Discount\t:\t" + Const.DISCOUNT + "\n");
 			sb.append("k\t\t:\t" + Const.K + " (i.e. # of times simplified Bellman"
@@ -148,4 +207,5 @@ public class DisplayManager {
 		sb.append("\n");
 		return sb;
 	}
+
 }
