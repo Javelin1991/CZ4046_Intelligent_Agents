@@ -63,8 +63,11 @@ public class PolicyIteration {
 
 			UtilityManager.updateUtilites(newUtilArr, currUtilArr);
 
-			// Append utilities of each state achieved so far (until current iteration) to a list of utility
-			utilityList.add(currUtilArr);
+			// Append to list of Utility a copy of the existing actions & utilities
+			Utility[][] currUtilArrCopy =
+			new Utility[Const.NUM_COLS][Const.NUM_ROWS];
+			UtilityManager.updateUtilites(currUtilArr, currUtilArrCopy);
+			utilityList.add(currUtilArrCopy);
 
 			// Policy estimation based on the current utilites
 			newUtilArr = UtilityManager.estimateNextUtilities(currUtilArr, grid);
@@ -100,9 +103,9 @@ public class PolicyIteration {
 
 	private static void displayResults() {
 		// Final item in the list is the optimal policy derived by policy iteration
-		int lastIteration = utilityList.size() - 1;
+		int latestUtilities = utilityList.size() - 1;
 		final Utility[][] optimalPolicy =
-		utilityList.get(lastIteration);
+		utilityList.get(latestUtilities);
 
 		// Displays the Grid Environment
 		DisplayManager.displayGrid(grid);

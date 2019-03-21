@@ -60,10 +60,14 @@ public class ValueIteration {
 		do {
 
 			UtilityManager.updateUtilites(newUtilArr, currUtilArr);
-			delta = Double.MIN_VALUE;
 
-			// Append utilities of each state achieved so far (until current iteration) to a list of utility
-			 utilityList.add(currUtilArr);
+ 			delta = Double.MIN_VALUE;
+
+			// Append to list of Utility a copy of the existing actions & utilities
+ 			Utility[][] currUtilArrCopy =
+ 			new Utility[Const.NUM_COLS][Const.NUM_ROWS];
+			UtilityManager.updateUtilites(currUtilArr, currUtilArrCopy);
+			utilityList.add(currUtilArrCopy);
 
 			// For each state
 			for(int row = 0 ; row < Const.NUM_ROWS ; row++) {
