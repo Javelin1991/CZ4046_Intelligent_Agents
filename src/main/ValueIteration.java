@@ -15,7 +15,7 @@ import model.State;
 public class ValueIteration {
 
 	public static GridEnvironment gridEnvironment;
-	private static List<Utility[][]> finalUtilities;
+	private static List<Utility[][]> utilityList;
 	private static State[][] grid;
 	private static int iterations = 0;
 	private static double convergeThreshold;
@@ -34,20 +34,22 @@ public class ValueIteration {
 		displayResults();
 
 		// Save utility estimates to csv file for plotting
-		FileManager.writeToFile(finalUtilities, "value_iteration_utilities");
+		FileManager.writeToFile(utilityList, "value_iteration_utilities");
 	}
 
 	public static void runValueIteration(final State[][] grid) {
 
 		Utility[][] currUtilArr = new Utility[Const.NUM_COLS][Const.NUM_ROWS];
 		Utility[][] newUtilArr = new Utility[Const.NUM_COLS][Const.NUM_ROWS];
+
+		// Initialize default utilities for each state
 		for (int col = 0; col < Const.NUM_COLS; col++) {
 			for (int row = 0; row < Const.NUM_ROWS; row++) {
 				newUtilArr[col][row] = new Utility();
 			}
 		}
 
-		finalUtilities = new ArrayList<>();
+		utilityList = new ArrayList<>();
 
 		// Initialize delta to minimum double value first
 		double delta = Double.MIN_VALUE;
@@ -60,29 +62,25 @@ public class ValueIteration {
 			UtilityManager.updateUtilites(newUtilArr, currUtilArr);
 			delta = Double.MIN_VALUE;
 
-			// Append to list of Utility a copy of the existing actions & utilities
-			Utility[][] currUtilArrCopy =
-			new Utility[Const.NUM_COLS][Const.NUM_ROWS];
-			UtilityManager.updateUtilites(currUtilArr, currUtilArrCopy);
-			finalUtilities.add(currUtilArrCopy);
+			// Append utilities of each state achieved so far (until current iteration) to a list of utility
+			 utilityList.add(currUtilArr);
 
 			// For each state
 			for(int row = 0 ; row < Const.NUM_ROWS ; row++) {
 				for(int col = 0 ; col < Const.NUM_COLS ; col++) {
 
-					// Not necessary to calculate for walls
-					if(grid[col][row].isWall())
-					continue;
+					// Calculate the utility for each state, not necessary to calculate for walls
+					if (!grid[col][row].isWall()) {
+						newUtilArr[col][row] =
+						UtilityManager.getBestUtility(col, row, currUtilArr, grid);
 
-					newUtilArr[col][row] =
-					UtilityManager.getBestUtility(col, row, currUtilArr, grid);
+						double updatedUtil = newUtilArr[col][row].getUtil();
+						double currentUtil = currUtilArr[col][row].getUtil();
+						double updatedDelta = Math.abs(updatedUtil - currentUtil);
 
-					double updatedUtil = newUtilArr[col][row].getUtil();
-					double currentUtil = currUtilArr[col][row].getUtil();
-					double updatedDelta = Math.abs(updatedUtil - currentUtil);
-
-					// Update delta, if the updated delta value is larger than the current one
-					delta = Math.max(delta, updatedDelta);
+						// Update delta, if the updated delta value is larger than the current one
+						delta = Math.max(delta, updatedDelta);
+					}
 				}
 			}
 			iterations++;
@@ -93,8 +91,9 @@ public class ValueIteration {
 
 	private static void displayResults() {
 		// Final item in the list is the optimal policy derived by value iteration
+		int lastIteration = utilityList.size() - 1;
 		final Utility[][] optimalPolicy =
-		finalUtilities.get(finalUtilities.size() - 1);
+		utilityList.get(lastIteration);
 
 		// Displays the Grid Environment
 		DisplayManager.displayGrid(grid);

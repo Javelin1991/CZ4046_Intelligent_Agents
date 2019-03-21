@@ -75,21 +75,17 @@ public class UtilityManager {
 			// For each state
 			for (int row = 0; row < Const.NUM_ROWS; row++) {
 				for (int col = 0; col < Const.NUM_COLS; col++) {
-
-					// Not necessary to calculate for walls
-					if (grid[col][row].isWall())
-					continue;
-
-					// Updates the utility based on the action stated in the policy
-					Action action = currUtilArrCpy[col][row].getAction();
-					newUtilArr[col][row] = UtilityManager.getFixedUtility(action,
-					col, row, currUtilArrCpy, grid);
+					if (!grid[col][row].isWall()) {
+						// Updates the utility based on the action stated in the policy
+						Action action = currUtilArrCpy[col][row].getAction();
+						newUtilArr[col][row] = UtilityManager.getFixedUtility(action,
+						col, row, currUtilArrCpy, grid);
+					}
 				}
 			}
-
 			UtilityManager.updateUtilites(newUtilArr, currUtilArrCpy);
-
-		} while(++k < Const.K);
+			k++;
+		} while(k < Const.K);
 
 		return newUtilArr;
 	}
