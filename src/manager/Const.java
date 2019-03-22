@@ -18,6 +18,7 @@ public class Const {
 	public static final double PROB_RIGHT = 0.100;
 
 	// Delimiters
+	
 	public static final String GRID_DELIM = ";";
 	public static final String COL_ROW_DELIM = ",";
 
@@ -40,7 +41,7 @@ public class Const {
 	public static final double R_MAX = 1.000;
 
 	// Constant c
-	public static final double C = 50;	//constant parameter to adjust the maximum error allowed
+	public static final double C = 30;	//constant parameter to adjust the maximum error allowed
 	// Epsilon e = c * Rmax
 	public static final double EPSILON = C * R_MAX;
 

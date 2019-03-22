@@ -51,39 +51,38 @@ public class UtilityManager {
 	}
 
 	// Simplified Bellman update to produce the next utility estimate
-	public static Utility[][] estimateNextUtilities(final Utility[][] currUtilArr, final State[][] grid) {
+	public static Utility[][] estimateNextUtilities(final Utility[][] utilArr, final State[][] grid) {
 
-		Utility[][] currUtilArrCpy = new Utility[Const.NUM_COLS][Const.NUM_ROWS];
+		Utility[][] currUtilArr = new Utility[Const.NUM_COLS][Const.NUM_ROWS];
 		for (int col = 0; col < Const.NUM_COLS; col++) {
 			for (int row = 0; row < Const.NUM_ROWS; row++) {
-				currUtilArrCpy[col][row] = new Utility(
-				currUtilArr[col][row].getAction(),
-				currUtilArr[col][row].getUtil());
+				currUtilArr[col][row] = new Utility();
 			}
 		}
 
 		Utility[][] newUtilArr = new Utility[Const.NUM_COLS][Const.NUM_ROWS];
 		for (int col = 0; col < Const.NUM_COLS; col++) {
 			for (int row = 0; row < Const.NUM_ROWS; row++) {
-				newUtilArr[col][row] = new Utility();
+				newUtilArr[col][row] = new Utility(utilArr[col][row].getAction(), utilArr[col][row].getUtil());
 			}
 		}
 
+
 		int k = 0;
 		do {
+			UtilityManager.updateUtilites(newUtilArr, currUtilArr);
 
 			// For each state
 			for (int row = 0; row < Const.NUM_ROWS; row++) {
 				for (int col = 0; col < Const.NUM_COLS; col++) {
 					if (!grid[col][row].isWall()) {
 						// Updates the utility based on the action stated in the policy
-						Action action = currUtilArrCpy[col][row].getAction();
+						Action action = currUtilArr[col][row].getAction();
 						newUtilArr[col][row] = UtilityManager.getFixedUtility(action,
-						col, row, currUtilArrCpy, grid);
+						col, row, currUtilArr, grid);
 					}
 				}
 			}
-			UtilityManager.updateUtilites(newUtilArr, currUtilArrCpy);
 			k++;
 		} while(k < Const.K);
 

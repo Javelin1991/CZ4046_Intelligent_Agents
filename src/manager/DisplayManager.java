@@ -184,8 +184,8 @@ public class DisplayManager {
 			sb.append("Convergence Threshold\t:\t" + String.format("%.5f", convergeThreshold) + "\n\n");
 		} else {
 			sb.append("Discount\t:\t" + Const.DISCOUNT + "\n");
-			sb.append("k\t\t:\t" + Const.K + " (i.e. # of times simplified Bellman"
-			+ " update is repeated to produce the next utility estimate)\n\n");
+			//(i.e. # of times simplified Bellman update is repeated to produce the next utility estimate)
+			sb.append("k\t\t:\t" + Const.K + "\n\n");
 		}
 		System.out.print(sb.toString());
 	}

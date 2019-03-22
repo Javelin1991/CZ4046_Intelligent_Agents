@@ -48,7 +48,8 @@ public class PolicyIteration {
 			for (int row = 0; row < Const.NUM_ROWS; row++) {
 				newUtilArr[col][row] = new Utility();
 				if (!grid[col][row].isWall()) {
-					newUtilArr[col][row].setAction(Action.UP);
+					Action randomAction = Action.getRandomAction();
+					newUtilArr[col][row].setAction(randomAction);
 				}
 			}
 		}
@@ -68,8 +69,9 @@ public class PolicyIteration {
 			new Utility[Const.NUM_COLS][Const.NUM_ROWS];
 			UtilityManager.updateUtilites(currUtilArr, currUtilArrCopy);
 			utilityList.add(currUtilArrCopy);
+			
 
-			// Policy estimation based on the current utilites
+			// Policy estimation based on the current actions and utilities
 			newUtilArr = UtilityManager.estimateNextUtilities(currUtilArr, grid);
 
 			unchanged = true;
@@ -84,7 +86,7 @@ public class PolicyIteration {
 						Utility bestActionUtil =
 						UtilityManager.getBestUtility(col, row, newUtilArr, grid);
 
-						// Action and the corresponding utlity based on current policy
+						// Action and the corresponding utility based on current policy
 						Action policyAction = newUtilArr[col][row].getAction();
 						Utility policyActionUtil = UtilityManager.getFixedUtility(policyAction, col, row, newUtilArr, grid);
 
