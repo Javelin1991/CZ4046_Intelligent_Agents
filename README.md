@@ -2,7 +2,7 @@
 
 ## Learning Outcome
 I have learnt fundamentals in reinforcement learning (RL) and the two RL algorithms such as **Value Iteration** and 
-**Policy Iteraiton**. I have also gained knowledge regarding Single self-interested agent as well as Multi-Agent System (MAS).
+**Policy Iteraiton**. I have also gained knowledge regarding Individual/Single Agent as well as Multi-Agent System (MAS).
 The coursework includes two assignments : 
 1) Implementing Value Iteration and Policy Iteration algorithms to find the optimal policy for a given maze environment
 2) Implementing Repeated Prisoners' Dilemma (the scenario involving three players) 
